@@ -1,0 +1,9 @@
+{
+  "comment": "Batch 1 — Norwegian (bokmål) exonyms for capitals, keyed by country key. Only names that differ from English need entries.",
+  "DNK": "København", "RUS": "Moskva", "GRC": "Athen", "ITA": "Roma", "PRT": "Lisboa",
+  "CZE": "Praha", "POL": "Warszawa", "AUT": "Wien", "BEL": "Brussel", "ROU": "București",
+  "EGY": "Kairo", "DZA": "Alger", "MEX": "Mexico by", "CUB": "Havanna", "PAN": "Panama by",
+  "GTM": "Guatemala by", "ETH": "Addis Abeba", "CYP": "Nikosia", "VAT": "Vatikanstaten",
+  "LUX": "Luxembourg by", "SAU": "Riyadh", "MMR": "Naypyidaw", "TCD": "N'Djamena",
+  "CPV": "Praia", "HRV": "Zagreb", "UKR": "Kyiv"
+}

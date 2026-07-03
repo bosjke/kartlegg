@@ -1,0 +1,14 @@
+{
+  "comment": "Batch 1 — Norwegian (bokmål) exonyms for cities, keyed by countryKey:EnglishCityName (exactly as in cities.json).",
+  "ITA:Rome": "Roma", "ITA:Milan": "Milano", "ITA:Naples": "Napoli", "ITA:Turin": "Torino", "ITA:Florence": "Firenze",
+  "RUS:Moscow": "Moskva", "RUS:St.  Petersburg": "St. Petersburg",
+  "GRC:Athens": "Athen", "GRC:Piraeus": "Pireus",
+  "POL:Warsaw": "Warszawa",
+  "CZE:Prague": "Praha",
+  "AUT:Vienna": "Wien",
+  "BEL:Brussels": "Brussel", "BEL:Antwerpen": "Antwerpen", "BEL:Gent": "Gent",
+  "PRT:Lisbon": "Lisboa",
+  "EGY:Cairo": "Kairo", "EGY:Alexandria": "Alexandria",
+  "MEX:Mexico City": "Mexico by",
+  "ESP:Seville": "Sevilla"
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "key": "CYN",
+    "review": "HAND-CURATED — Northern Cyprus. Names/coords from Wikidata/Wikipedia; flag is a hand-drawn approximation.",
+    "iso2": null,
+    "name_en": "Northern Cyprus",
+    "name_no": "Nord-Kypros",
+    "name_native": "Kuzey Kıbrıs",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "capital": { "name_en": "North Nicosia", "name_no": "Nord-Nikosia", "lat": 35.19, "lng": 33.365 },
+    "aliases": ["Northern Cyprus", "Nord-Kypros", "Kuzey Kıbrıs", "Turkish Republic of Northern Cyprus", "TRNC", "KKTC", "North Cyprus"],
+    "flag": "flags/cyn.svg",
+    "match": "N. Cyprus"
+  },
+  {
+    "key": "SOL",
+    "review": "HAND-CURATED — Somaliland. Names/coords from Wikidata/Wikipedia; flag is a hand-drawn approximation (calligraphy omitted).",
+    "iso2": null,
+    "name_en": "Somaliland",
+    "name_no": "Somaliland",
+    "name_native": "Soomaaliland",
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
+    "capital": { "name_en": "Hargeisa", "name_no": "", "lat": 9.5624, "lng": 44.077 },
+    "aliases": ["Somaliland", "Soomaaliland", "Republic of Somaliland"],
+    "flag": "flags/sol.svg",
+    "match": "Somaliland"
+  },
+  {
+    "key": "ABK",
+    "review": "HAND-CURATED — Abkhazia. Names/coords from Wikidata/Wikipedia; flag is a hand-drawn approximation.",
+    "iso2": null,
+    "name_en": "Abkhazia",
+    "name_no": "Abkhasia",
+    "name_native": "Аԥсны",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "capital": { "name_en": "Sukhumi", "name_no": "", "lat": 43.0015, "lng": 41.0234 },
+    "aliases": ["Abkhazia", "Abkhasia", "Apsny", "Republic of Abkhazia"],
+    "flag": "flags/abk.svg",
+    "match": "Abkhazia"
+  },
+  {
+    "key": "SOS",
+    "review": "HAND-CURATED — South Ossetia. Names/coords from Wikidata/Wikipedia; flag is a hand-drawn approximation.",
+    "iso2": null,
+    "name_en": "South Ossetia",
+    "name_no": "Sør-Ossetia",
+    "name_native": "Хуссар Ирыстон",
+    "continent": "Asia",
+    "subregion": "Western Asia",
+    "capital": { "name_en": "Tskhinvali", "name_no": "", "lat": 42.2277, "lng": 43.9702 },
+    "aliases": ["South Ossetia", "Sør-Ossetia", "Khussar Iryston", "State of Alania", "Tskhinvali Region"],
+    "flag": "flags/sos.svg",
+    "match": "South Ossetia"
+  },
+  {
+    "key": "TRA",
+    "review": "HAND-CURATED — Transnistria. Names/coords from Wikidata/Wikipedia; flag is a hand-drawn approximation (emblem omitted).",
+    "iso2": null,
+    "name_en": "Transnistria",
+    "name_no": "Transnistria",
+    "name_native": "Приднестровье",
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
+    "capital": { "name_en": "Tiraspol", "name_no": "", "lat": 46.8403, "lng": 29.6433 },
+    "aliases": ["Transnistria", "Pridnestrovie", "Transdniestria", "PMR", "Pridnestrovian Moldavian Republic"],
+    "flag": "flags/tra.svg",
+    "match": "Transnistria"
+  }
+]

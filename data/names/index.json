@@ -1,0 +1,5 @@
+{
+  "comment": "Manifest of incremental name batches. Add new batch files here; the app merges them in order. Fallback chain when a name is missing: Norwegian -> native -> English (never blank).",
+  "no_capitals": ["names/no/capitals.batch1.json"],
+  "no_cities": ["names/no/cities.batch1.json"]
+}

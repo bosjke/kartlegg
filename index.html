@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Kartlegg · MapOut</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230d2b3e' stroke='%23e8b84b' stroke-width='6'/><path d='M50 8v84M8 50h84' stroke='%23e8b84b' stroke-width='4'/></svg>">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Loading / error -->
+  <section class="screen" id="screen-loading">
+    <div class="menu-card center">
+      <div class="brand-rose" aria-hidden="true"></div>
+      <p id="loading-text" class="dim">Loading atlas data…</p>
+      <div id="loading-error" class="hidden">
+        <h2>Could not read the data files</h2>
+        <p>Browsers block local file reads when a page is opened straight from disk.
+           Start a small local server in this folder and open the address it prints:</p>
+        <pre>python3 -m http.server 8000
+# then open  http://localhost:8000</pre>
+        <p>No internet connection is needed — everything is read from this folder.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menus (start, category, setup, mode, ready, end) are rendered here -->
+  <section class="screen hidden" id="screen-menu">
+    <div class="menu-scroll"><div class="menu-card" id="menu-root"></div></div>
+  </section>
+
+  <!-- Round -->
+  <section class="screen hidden" id="screen-round">
+    <header id="hud">
+      <button id="hud-quit" class="ghost-btn" type="button">✕</button>
+      <div id="hud-progress" class="hud-item"></div>
+      <button id="hud-timer" type="button"></button>
+      <div id="hud-score" class="hud-item"></div>
+    </header>
+
+    <div id="plate">
+      <div id="plate-eyebrow"></div>
+      <div id="plate-prompt"></div>
+      <div id="plate-media" class="hidden">
+        <div id="flag-frame" class="hidden">
+          <img id="flag-img" alt="">
+          <div id="flag-cover"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="map-wrap"><div id="map"></div></div>
+
+    <div id="action">
+      <div id="feedback" class="hidden"></div>
+      <div id="timer-track" class="spent"><div id="timer-fill"></div></div>
+      <div id="answer-area"></div>
+    </div>
+  </section>
+
+</div>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="vendor/turf/turf.min.js"></script>
+<script src="js/norm.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/data.js"></script>
+<script src="js/map.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

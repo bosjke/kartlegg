@@ -1,0 +1,5 @@
+<svg width="225" height="150" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480"><g transform="scale(1.125,1)"><!-- Northern Cyprus (approximation) -->
+<rect width="640" height="480" fill="#fff"/>
+<rect y="48" width="640" height="38" fill="#e30a17"/><rect y="394" width="640" height="38" fill="#e30a17"/>
+<circle cx="285" cy="240" r="92" fill="#e30a17"/><circle cx="308" cy="240" r="74" fill="#fff"/>
+<path fill="#e30a17" d="M394 240l86 28-53-73v90l53-73z"/></g></svg>

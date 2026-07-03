@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480"><!-- Abkhazia (approximation) -->
+<defs><path id="s" fill="#fff" d="M0-9l2.6 6.4 6.9.5-5.3 4.5 1.7 6.7L0 5.4l-5.9 3.7 1.7-6.7-5.3-4.5 6.9-.5z"/></defs>
+<rect width="640" height="480" fill="#fff"/>
+<rect width="640" height="68.6" y="0" fill="#00923f"/><rect width="640" height="68.6" y="137.2" fill="#00923f"/>
+<rect width="640" height="68.6" y="274.4" fill="#00923f"/><rect width="640" height="68.4" y="411.6" fill="#00923f"/>
+<rect width="272" height="171.5" fill="#c8102e"/>
+<g fill="#fff"><rect x="106" y="70" width="60" height="72" rx="30"/>
+<rect x="104" y="52" width="9" height="42" rx="4.5" transform="rotate(-18 108 73)"/>
+<rect x="119" y="44" width="9" height="48" rx="4.5" transform="rotate(-7 123 68)"/>
+<rect x="134" y="42" width="9" height="50" rx="4.5"/>
+<rect x="149" y="44" width="9" height="48" rx="4.5" transform="rotate(7 153 68)"/>
+<rect x="163" y="52" width="9" height="42" rx="4.5" transform="rotate(18 167 73)"/></g>
+<use href="#s" x="46" y="40"/><use href="#s" x="76" y="26"/><use href="#s" x="106" y="18"/><use href="#s" x="136" y="15"/>
+<use href="#s" x="166" y="18"/><use href="#s" x="196" y="26"/><use href="#s" x="226" y="40"/></svg>
