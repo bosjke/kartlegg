@@ -51,6 +51,12 @@
       timeUp: 'Time\u2019s up', timerOff: 'off', timerOn: 'on',
       retryNoPoint: 'cleared on retry \u2014 no point',
       themeDark: 'Dark', themeLight: 'Light',
+      dailySession: 'Daily session', dailyExtra: 'Extra session', sessionDone: 'Session complete',
+      streakLabel: 'day streak', streakDays: '{n} days in a row', xpEarned: 'XP earned',
+      xpToday: '{n} / {g} XP today', pathTitle: 'Learning path \u00b7 Europe', freePlay: 'Free practice',
+      countriesShort: 'countries', backToMenu: 'Back to menu',
+      node_norden: 'The Nordics', node_vest: 'Western Europe', node_sor: 'Southern Europe',
+      node_balkan: 'The Balkans', node_ost: 'Eastern Europe',
       judgeGood: [
         ['Magnificent. I shall rename a boulevard in your honor.', 'Generalissimo Kartov'],
         ['Correct. The Ministry of Maps applauds \u2014 once.', 'Generalissimo Kartov'],

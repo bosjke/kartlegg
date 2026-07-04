@@ -78,13 +78,72 @@
   }
 
   /* ── screens ──────────────────────────────────────────────────────────── */
+  /* ── learning path (prototype: Europe) ─────────────────────────────── */
+  var PATH_NODES = [
+    { id: 'norden', keys: ['NOR','SWE','DNK','FIN','ISL','EST','LVA','LTU'] },
+    { id: 'vest',   keys: ['GBR','IRL','FRA','BEL','NLD','LUX','DEU','CHE','AUT','LIE'] },
+    { id: 'sor',    keys: ['PRT','ESP','ITA','GRC','MLT','AND','MCO','SMR','VAT','CYP'] },
+    { id: 'balkan', keys: ['SVN','HRV','BIH','SRB','MNE','KOS','MKD','ALB','BGR','ROU'] },
+    { id: 'ost',    keys: ['POL','CZE','SVK','HUN','UKR','BLR','MDA','RUS','TRA'] }
+  ];
+  function nodeUnlocked(i) {
+    return i === 0 || WQSRS.nodeStars(PATH_NODES[i - 1].id) > 0;
+  }
+
   function showStart() {
     screen('menu');
     var r = root(); r.innerHTML = '';
-    r.classList.add('center');
-    r.appendChild(el('div', 'brand-rose'));
-    r.appendChild(el('p', 'eyebrow', t('tagline')));
-    r.appendChild(el('h1', 'title', t('appTitle')));
+    r.classList.remove('center');
+
+    /* header: brand + streak + today's XP */
+    var top = el('div', 'home-top');
+    var brandBox = el('div', null);
+    brandBox.appendChild(el('h1', 'title home-title', t('appTitle')));
+    brandBox.appendChild(el('p', 'eyebrow', t('tagline')));
+    top.appendChild(brandBox);
+    var streakBox = el('div', 'streak-box');
+    streakBox.appendChild(el('div', 'streak-n', '\ud83d\udd25 ' + WQSRS.streak()));
+    streakBox.appendChild(el('div', 'streak-lab', t('streakLabel')));
+    top.appendChild(streakBox);
+    r.appendChild(top);
+
+    var xp = WQSRS.xpToday(), goal = 30;
+    var xpWrap = el('div', 'xp-wrap');
+    xpWrap.appendChild(el('div', 'xp-lab', t('xpToday', { n: xp, g: goal })));
+    var bar = el('div', 'xp-bar');
+    var fill = el('div', 'xp-fill');
+    fill.style.width = Math.min(100, Math.round(100 * xp / goal)) + '%';
+    bar.appendChild(fill);
+    xpWrap.appendChild(bar);
+    r.appendChild(xpWrap);
+
+    var list = el('div', 'menu-list');
+    var done = WQSRS.dailyDone();
+    list.appendChild(menuBtn(done ? t('dailyExtra') : t('dailySession'),
+      done ? '\u2713' : '\u2248 3 min', startDailySession, 'primary'));
+    r.appendChild(list);
+
+    /* path */
+    r.appendChild(el('p', 'eyebrow path-eyebrow', t('pathTitle')));
+    var path = el('div', 'menu-list');
+    PATH_NODES.forEach(function (node, i) {
+      var stars = WQSRS.nodeStars(node.id);
+      var unlocked = nodeUnlocked(i);
+      var note = !unlocked ? '\ud83d\udd12'
+        : stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars)
+        : node.keys.length + ' ' + t('countriesShort');
+      var b = menuBtn(t('node_' + node.id), note, function () {
+        if (unlocked) startLesson(node);
+      }, unlocked ? null : 'locked');
+      path.appendChild(b);
+    });
+    r.appendChild(path);
+
+    /* free play + settings */
+    var free = el('div', 'menu-list');
+    free.appendChild(menuBtn(t('freePlay'), null, showCategories));
+    r.appendChild(free);
+    var row = el('div', 'settings-row');
     var toggle = el('div', 'lang-toggle');
     ['no', 'en'].forEach(function (l) {
       var b = el('button', WQI18n.lang === l ? 'on' : '', l === 'no' ? 'Norsk' : 'English');
@@ -92,7 +151,7 @@
       b.addEventListener('click', function () { WQI18n.setLang(l); showStart(); });
       toggle.appendChild(b);
     });
-    r.appendChild(toggle);
+    row.appendChild(toggle);
     var themeToggle = el('div', 'lang-toggle');
     [['dark', t('themeDark')], ['light', t('themeLight')]].forEach(function (pair) {
       var b = el('button', theme === pair[0] ? 'on' : '', pair[1]);
@@ -100,10 +159,78 @@
       b.addEventListener('click', function () { applyTheme(pair[0]); showStart(); });
       themeToggle.appendChild(b);
     });
-    r.appendChild(themeToggle);
+    row.appendChild(themeToggle);
+    r.appendChild(row);
+  }
+
+  /* ── daily session: a queue of short segments ──────────────────────── */
+  function runSegments(segs, doneCb) {
+    var totals = { score: 0, max: 0, correct: 0, total: 0 };
+    var i = 0;
+    function nextSeg() {
+      if (i >= segs.length) { doneCb(totals); return; }
+      var setup = segs[i++];
+      screen('round');
+      WQMap.init();
+      currentRound = new WQQuiz.Round(setup, { onFinish: function (stats) {
+        totals.score += stats.score; totals.max += stats.max;
+        totals.correct += stats.correct; totals.total += stats.total;
+        nextSeg();
+      } });
+      currentRound.begin();
+    }
+    nextSeg();
+  }
+  function startDailySession() {
+    var segs = WQSRS.buildDailySession({ type: 'continent', value: 'Europe' });
+    if (!segs.length) { showCategories(); return; }
+    runSegments(segs, function (totals) {
+      WQSRS.addXp(totals.score);
+      var streak = WQSRS.completeDaily();
+      showSessionEnd(totals, streak);
+    });
+  }
+  function showSessionEnd(totals, streak) {
+    screen('menu');
+    var r = root(); r.innerHTML = ''; r.classList.remove('center');
+    header(r, t('dailySession'), t('sessionDone'), showStart);
+    r.appendChild(el('div', 'streak-big', '\ud83d\udd25 ' + streak));
+    r.appendChild(el('p', 'dim center-text', t('streakDays', { n: streak })));
+    var box = el('div', 'stat-block');
+    [[t('totalScore'), totals.score + ' / ' + totals.max],
+     [t('correctOf'), totals.correct + ' / ' + totals.total],
+     [t('xpEarned'), '+' + totals.score]].forEach(function (row) {
+      var line = el('div', 'stat-row');
+      line.appendChild(el('span', null, row[0]));
+      line.appendChild(el('strong', null, String(row[1])));
+      box.appendChild(line);
+    });
+    r.appendChild(box);
+    var pool = t(totals.correct >= totals.total * 0.7 ? 'judgeGood' : 'judgeBad');
+    var v = pool[Math.floor(Math.random() * pool.length)];
+    r.appendChild(el('p', 'dim center-text judge-line', '\u00ab' + v[0] + '\u00bb \u2014 ' + v[1]));
     var list = el('div', 'menu-list');
-    list.appendChild(menuBtn(t('play'), null, showCategories, 'primary'));
+    list.appendChild(menuBtn(t('backToMenu'), null, showStart, 'primary'));
     r.appendChild(list);
+  }
+
+  /* ── lessons: fixed country sets, Find mode, stars by accuracy ─────── */
+  function startLesson(node) {
+    var recs = node.keys.map(function (k) { return WQData.countries[k]; })
+      .filter(function (r) { return r && WQData.countryFeatures[r.key]; });
+    var setup = { category: 'countries', mode: 'find', scope: { type: 'continent', value: 'Europe' },
+                  amount: null, itemsOverride: recs, tag: 'lesson:' + node.id };
+    screen('round');
+    WQMap.init();
+    currentRound = new WQQuiz.Round(setup, { onFinish: function (stats) {
+      var pct = stats.total ? stats.correct / stats.total : 0;
+      var stars = pct >= 1 ? 3 : pct >= 0.8 ? 2 : pct >= 0.6 ? 1 : 0;
+      if (stars) WQSRS.setNodeStars(node.id, stars);
+      WQSRS.addXp(stats.score);
+      stats.lessonStars = stars; stats.lessonId = node.id;
+      showEnd(stats, function () { startLesson(node); });
+    } });
+    currentRound.begin();
   }
 
   function showCategories() {
@@ -337,7 +464,7 @@
     currentRound.begin();
   }
 
-  function showEnd(stats) {
+  function showEnd(stats, replayFn) {
     currentRound = null;
     screen('menu');
     var r = root(); r.innerHTML = '';
@@ -357,7 +484,7 @@
       r.appendChild(d);
     });
     var list = el('div', 'menu-list');
-    list.appendChild(menuBtn(t('replay'), null, startRound, 'primary'));
+    list.appendChild(menuBtn(t('replay'), null, replayFn || startRound, 'primary'));
     list.appendChild(menuBtn(t('toMenu'), null, showCategories));
     r.appendChild(list);
   }

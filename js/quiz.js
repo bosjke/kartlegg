@@ -16,6 +16,7 @@
 
   /* ── setup key for personal bests (category+mode+scope+amount+optioncount) ── */
   function setupKey(s) {
+    if (s.tag) return 'tag:' + s.tag + '|' + s.category + '|' + s.mode;
     return [
       s.category, s.mode, s.outlineAnswer || s.capType || '-',
       s.scope.type + (s.scope.value ? ':' + s.scope.value : ''),
@@ -201,6 +202,7 @@
         return true;
       });
     }
+    if (s.itemsOverride) this.items = s.itemsOverride.slice();   /* lessons / daily reps */
     this.items = shuffle(this.items);
     if (s.amount != null && s.amount !== 'all') this.items = this.items.slice(0, s.amount);
     this.total = this.items.length;
@@ -605,6 +607,9 @@
     this.clearTimer();
     this.clearQTimer();
     this.currentResolved = true;
+    if (window.WQSRS && item) {
+      try { WQSRS.record(cat, itemId(cat, item), !!(correct && opts.countCorrect !== false)); } catch (e) {}
+    }
     WQMap.lock && WQMap.lock();
     this.asked++;
     this.attempts++;
