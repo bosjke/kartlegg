@@ -105,16 +105,8 @@
     xpWrap.appendChild(bar);
     r.appendChild(xpWrap);
 
-    /* single CTA: continue the path */
-    var ns = WQPath.nodes();
-    var cur = WQPath.currentIndex();
-    var list = el('div', 'menu-list');
-    list.appendChild(menuBtn(t('continuePath'), nodeLabel(ns[cur]), function () {
-      startLesson(ns[cur]);
-    }, 'primary'));
-    r.appendChild(list);
-
     /* the path itself */
+    var ns = WQPath.nodes();
     var wrap = el('div', 'path-wrap');
     var lastUnit = null;
     ns.forEach(function (node, i) {
@@ -259,9 +251,7 @@
     r.appendChild(el('p', 'dim center-text judge-line', '\u00ab' + v[0] + '\u00bb \u2014 ' + v[1]));
     var list = el('div', 'menu-list');
     if (stars < 3) list.appendChild(menuBtn(t('replay'), null, function () { startLesson(node); }));
-    var ns = WQPath.nodes(), cur = WQPath.currentIndex();
-    list.appendChild(menuBtn(t('continuePath'), nodeLabel(ns[cur]), function () { startLesson(ns[cur]); }, 'primary'));
-    list.appendChild(menuBtn(t('backToMenu'), null, showStart));
+    list.appendChild(menuBtn(t('backToMenu'), null, showStart, 'primary'));
     r.appendChild(list);
   }
 
@@ -271,8 +261,11 @@
     var r = root(); r.innerHTML = ''; r.classList.remove('center');
     header(r, t('appTitle'), t('chooseCategory'), showStart);
     var list = el('div', 'menu-list');
+    var CAT_ICONS = { countries: '\ud83d\uddfa\ufe0f', endonyms: '\ud83c\udff7\ufe0f',
+      capitals: '\ud83c\udfdb\ufe0f', flags: '\ud83d\udea9',
+      provinces: '\ud83e\udde9', cities: '\ud83c\udfd9\ufe0f' };
     ['countries', 'endonyms', 'capitals', 'flags', 'provinces', 'cities'].forEach(function (cat, ci) {
-      list.appendChild(menuBtn(t(cat), null, function () {
+      list.appendChild(menuBtn(CAT_ICONS[cat] + '  ' + t(cat), null, function () {
         state.category = cat;
         if (cat === 'provinces' || cat === 'cities') {
           if (cat === 'provinces' && !WQData.provinces) {
@@ -373,11 +366,13 @@
     var backTo = SCOPE_AMOUNT_CATS[state.category] ? showAmount : showRegionDrilldown;
     header(r, t(state.category), t('chooseMode'), backTo);
     var list = el('div', 'menu-list');
+    var MODE_ICONS = { find: '\ud83c\udfaf', eliminate: '\ud83e\uddf9', mc: '\ud83d\udd20',
+      type: '\u2328\ufe0f', outline: '\u270f\ufe0f', locate: '\ud83d\udccd', reveal: '\ud83d\uddbc\ufe0f' };
     MODES[state.category].forEach(function (m, mi) {
       var needsSub = m === 'mc' || m === 'outline' || (m === 'type' && state.category === 'capitals');
       var note = needsSub ? null
         : bestNoteFor(candidate({ mode: m, mcCount: null, outlineAnswer: null, capType: null }));
-      list.appendChild(menuBtn(t(m), note, function () {
+      list.appendChild(menuBtn(MODE_ICONS[m] + '  ' + t(m), note, function () {
         state.mode = m;
         state.mcCount = null; state.outlineAnswer = null; state.capType = null;
         if (m === 'mc') showMcCount(showReady);

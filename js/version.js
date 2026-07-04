@@ -1,1 +1,1 @@
-window.WQ_VERSION = '0.4.0';
+window.WQ_VERSION = '0.4.1';
