@@ -126,7 +126,9 @@
       }
       var stars = WQSRS.nodeStars(node.id);
       var isUnlocked = WQPath.unlocked(i);
-      var row = el('div', 'path-row ' + ['zl', 'zc', 'zr', 'zc'][i % 4]);
+      var OFFS = [6, 38, 16, 48, 8, 28, 52, 20, 44, 2, 34, 12];
+      var row = el('div', 'path-row');
+      row.style.paddingLeft = OFFS[i % OFFS.length] + '%';
       var b = el('button', 'path-node' +
         (node.checkpoint ? ' checkpoint' : '') +
         (!isUnlocked ? ' locked' : stars ? ' done' : ' current'), '');
@@ -167,10 +169,12 @@
     });
     row2.appendChild(themeToggle);
     r.appendChild(row2);
+    r.appendChild(el('p', 'version-tag', 'v' + (window.WQ_VERSION || '?')));
   }
 
   function nodeLabel(node) {
     var base = t(node.labelKey);
+    if (node.labelKey === 'lesLesson') return t('lesLesson', { n: node.n });
     return node.roman ? base + ' ' + node.roman : base;
   }
 
@@ -207,16 +211,14 @@
     header(r, title || t('dailySession'), t('sessionDone'), showStart);
     r.appendChild(el('div', 'streak-big', '\ud83d\udd25 ' + streak));
     r.appendChild(el('p', 'dim center-text', t('streakDays', { n: streak })));
-    var box = el('div', 'stat-block');
     [[t('totalScore'), totals.score + ' / ' + totals.max],
      [t('correctOf'), totals.correct + ' / ' + totals.total],
      [t('xpEarned'), '+' + totals.score]].forEach(function (row) {
-      var line = el('div', 'stat-row');
-      line.appendChild(el('span', null, row[0]));
-      line.appendChild(el('strong', null, String(row[1])));
-      box.appendChild(line);
+      var d = el('div', 'stat-block');
+      d.appendChild(el('span', null, row[0]));
+      d.appendChild(el('span', 'v', String(row[1])));
+      r.appendChild(d);
     });
-    r.appendChild(box);
     var pool = t(totals.correct >= totals.total * 0.7 ? 'judgeGood' : 'judgeBad');
     var v = pool[Math.floor(Math.random() * pool.length)];
     r.appendChild(el('p', 'dim center-text judge-line', '\u00ab' + v[0] + '\u00bb \u2014 ' + v[1]));
@@ -231,8 +233,8 @@
     segs.forEach(function (x) { x.tag = 'lesson:' + node.id; });
     runSegments(segs, function (totals) {
       var pct = totals.total ? totals.correct / totals.total : 0;
-      var stars = pct >= 1 ? 3 : pct >= 0.8 ? 2 : pct >= 0.6 ? 1 : 0;
-      if (stars) WQSRS.setNodeStars(node.id, stars);
+      var stars = pct >= 1 ? 3 : pct >= 0.75 ? 2 : 1;   /* finishing always passes */
+      WQSRS.setNodeStars(node.id, stars);
       WQSRS.addXp(totals.score);
       var streak = WQSRS.completeDaily();       /* any finished lesson keeps the streak */
       showLessonEnd(node, totals, stars, streak);
@@ -244,16 +246,14 @@
     header(r, nodeLabel(node), t('sessionDone'), showStart);
     r.appendChild(el('div', 'streak-big',
       stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars) : '\u2606\u2606\u2606'));
-    var box = el('div', 'stat-block');
     [[t('totalScore'), totals.score + ' / ' + totals.max],
      [t('correctOf'), totals.correct + ' / ' + totals.total],
      [t('streakLabel'), '\ud83d\udd25 ' + streak]].forEach(function (row) {
-      var line = el('div', 'stat-row');
-      line.appendChild(el('span', null, row[0]));
-      line.appendChild(el('strong', null, String(row[1])));
-      box.appendChild(line);
+      var d = el('div', 'stat-block');
+      d.appendChild(el('span', null, row[0]));
+      d.appendChild(el('span', 'v', String(row[1])));
+      r.appendChild(d);
     });
-    r.appendChild(box);
     var pool = t(stars >= 2 ? 'judgeGood' : 'judgeBad');
     var v = pool[Math.floor(Math.random() * pool.length)];
     r.appendChild(el('p', 'dim center-text judge-line', '\u00ab' + v[0] + '\u00bb \u2014 ' + v[1]));

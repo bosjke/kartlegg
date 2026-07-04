@@ -1,0 +1,1 @@
+window.WQ_VERSION = '0.4.0';

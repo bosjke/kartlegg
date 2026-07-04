@@ -130,6 +130,8 @@
     if (!this.timerEnabled) { if (track) track.classList.add('spent'); return; }
     var self = this;
     this.qRemain = 15;
+    var glow = document.getElementById('time-glow');
+    if (glow) glow.classList.remove('on');
     if (track && fill) {                       /* bar drains over 15 s */
       track.classList.remove('spent', 'urgent');
       fill.style.transition = 'none';
@@ -140,7 +142,11 @@
     }
     this.qTimer = setInterval(function () {
       self.qRemain--;
-      if (self.qRemain <= 5 && track) track.classList.add('urgent');
+      if (self.qRemain <= 5) {
+        if (track) track.classList.add('urgent');
+        var g = document.getElementById('time-glow');
+        if (g) g.classList.add('on');
+      }
       if (self.qRemain <= 0) { self.clearQTimer(); self.timeUp(); }
     }, 1000);
   };
@@ -148,6 +154,8 @@
     if (this.qTimer) { clearInterval(this.qTimer); this.qTimer = null; }
     var track = document.getElementById('timer-track');
     if (track) track.classList.add('spent');
+    var glow = document.getElementById('time-glow');
+    if (glow) glow.classList.remove('on');
   };
 
   /* Question expired: resolve as a miss, per mode. */

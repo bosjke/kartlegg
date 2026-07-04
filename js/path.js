@@ -36,39 +36,50 @@
     return s;
   }
 
-  /* Build the flat node list once WQData is ready. */
+  /* Build the flat node list once WQData is ready. Every lesson is a MIX of
+     exercise types (find + choice + flags/capitals/typing), 10-14 questions,
+     roughly 2-3 minutes. The crown checkpoint gates the next unit — you can
+     jump straight to it to test out. */
   var _nodes = null;
   function nodes() {
     if (_nodes) return _nodes;
     _nodes = [];
-    UNITS.forEach(function (u) {
+    UNITS.forEach(function (u, ui) {
       var rs = recs(u.keys);
       var half = Math.ceil(rs.length / 2);
-      var chunks = [rs.slice(0, half), rs.slice(half)];
-      chunks.forEach(function (chunk, ci) {
-        if (!chunk.length) return;
+      var A = rs.slice(0, half), B = rs.slice(half);
+      var fl = withFlags(rs), cp = withCaps(rs);
+      [A, B].forEach(function (chunk, ci) {
+        if (chunk.length < 2) return;
+        var chFl = withFlags(chunk);
         _nodes.push({
-          id: u.id + '-land' + (ci + 1), unit: u.id, icon: '\ud83d\uddfa\ufe0f',
-          labelKey: 'lesCountries', roman: ci === 0 ? 'I' : 'II',
-          build: function () { return [seg('countries', 'find', chunk, { tag: 'lesson' })]; }
+          id: u.id + '-l' + (ci + 1), unit: u.id, unitIndex: ui,
+          icon: ci === 0 ? '\ud83d\uddfa\ufe0f' : '\ud83e\udded',
+          labelKey: 'lesLesson', n: ci + 1,
+          build: function () {
+            var out = [seg('countries', 'find', chunk, { tag: 'lesson' }),
+                       seg('countries', 'mc', chunk, { tag: 'lesson' })];
+            if (chFl.length >= 2) out.push(seg('flags', 'mc', chFl, { tag: 'lesson' }));
+            return out;
+          }
         });
       });
-      var fl = withFlags(rs);
-      if (fl.length >= 2) _nodes.push({
-        id: u.id + '-flagg', unit: u.id, icon: '\ud83d\udea9', labelKey: 'flags',
-        build: function () { return [seg('flags', 'mc', fl, { tag: 'lesson' })]; }
-      });
-      var cp = withCaps(rs);
       if (cp.length >= 2) _nodes.push({
-        id: u.id + '-hoved', unit: u.id, icon: '\ud83c\udfdb\ufe0f', labelKey: 'capitals',
-        build: function () { return [seg('capitals', 'mc', cp, { tag: 'lesson' })]; }
+        id: u.id + '-hoved', unit: u.id, unitIndex: ui, icon: '\ud83c\udfdb\ufe0f', labelKey: 'capitals',
+        build: function () {
+          return [seg('capitals', 'mc', cp, { tag: 'lesson' }),
+                  seg('capitals', 'find', sample(cp, Math.min(4, cp.length)), { tag: 'lesson' }),
+                  seg('countries', 'find', sample(rs, Math.min(3, rs.length)), { tag: 'lesson' })];
+        }
       });
       _nodes.push({
-        id: u.id + '-sjekk', unit: u.id, icon: '\ud83d\udc51', labelKey: 'lesCheckpoint', checkpoint: true,
+        id: u.id + '-sjekk', unit: u.id, unitIndex: ui, icon: '\ud83d\udc51',
+        labelKey: 'lesCheckpoint', checkpoint: true,
         build: function () {
           var out = [seg('countries', 'find', sample(rs, Math.min(4, rs.length)), { tag: 'lesson' })];
           if (fl.length >= 2) out.push(seg('flags', 'mc', sample(fl, Math.min(3, fl.length)), { tag: 'lesson' }));
           if (cp.length >= 2) out.push(seg('capitals', 'mc', sample(cp, Math.min(3, cp.length)), { tag: 'lesson' }));
+          out.push(seg('countries', 'type', sample(rs, Math.min(3, rs.length)), { tag: 'lesson' }));
           return out;
         }
       });
@@ -76,11 +87,14 @@
     return _nodes;
   }
 
+  function checkpointId(unitIndex) { return UNITS[unitIndex].id + '-sjekk'; }
+  /* Free within a unit; the next unit opens when this unit's crown has a star. */
   function unlocked(i) {
-    var ns = nodes();
-    return i === 0 || WQSRS.nodeStars(ns[i - 1].id) > 0;
+    var node = nodes()[i];
+    if (node.unitIndex === 0) return true;
+    return WQSRS.nodeStars(checkpointId(node.unitIndex - 1)) > 0;
   }
-  /* first unlocked node without stars = where you are on the path */
+  /* first unlocked node without stars = suggested next step */
   function currentIndex() {
     var ns = nodes();
     for (var i = 0; i < ns.length; i++) {
