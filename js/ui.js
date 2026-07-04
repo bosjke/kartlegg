@@ -215,7 +215,7 @@
     var v = pool[Math.floor(Math.random() * pool.length)];
     r.appendChild(el('p', 'dim center-text judge-line', '\u00ab' + v[0] + '\u00bb \u2014 ' + v[1]));
     var list = el('div', 'menu-list');
-    list.appendChild(menuBtn(t('backToMenu'), null, showStart, 'primary'));
+    list.appendChild(menuBtn(t('backToMenu'), null, showStart));
     r.appendChild(list);
   }
 
@@ -251,7 +251,7 @@
     r.appendChild(el('p', 'dim center-text judge-line', '\u00ab' + v[0] + '\u00bb \u2014 ' + v[1]));
     var list = el('div', 'menu-list');
     if (stars < 3) list.appendChild(menuBtn(t('replay'), null, function () { startLesson(node); }));
-    list.appendChild(menuBtn(t('backToMenu'), null, showStart, 'primary'));
+    list.appendChild(menuBtn(t('backToMenu'), null, showStart));
     r.appendChild(list);
   }
 
@@ -280,7 +280,7 @@
         } else {
           showScope();
         }
-      }, ci === 0 ? 'primary' : null));
+      }));
     });
     r.appendChild(list);
   }
@@ -293,7 +293,7 @@
     list.appendChild(menuBtn(t('allCountries'), poolSize(state.category, { type: 'world' }), function () {
       state.scope = { type: 'world' };
       showAmount();
-    }, 'primary'));
+    }));
     WQData.continents.forEach(function (c) {
       var n = poolSize(state.category, { type: 'continent', value: c });
       if (!n) return;
@@ -317,7 +317,7 @@
     });
     grid.appendChild(menuBtn(t('all'), n, function () {
       state.amount = 'all'; showMode();
-    }, 'small primary'));
+    }, 'small'));
     r.appendChild(grid);
   }
 
@@ -328,7 +328,7 @@
     var list = el('div', 'menu-list');
     list.appendChild(menuBtn(t('wholeWorld'), poolSize(state.category, { type: 'world' }), function () {
       state.scope = { type: 'world' }; state.amount = null; showMode();
-    }, 'primary'));
+    }));
     WQData.continents.forEach(function (c) {
       var n = poolSize(state.category, { type: 'continent', value: c });
       if (!n) return;
@@ -379,7 +379,7 @@
         else if (m === 'outline') showOutlineAnswer();
         else if (m === 'type' && state.category === 'capitals') showCapTypeSub();
         else showReady();
-      }, mi === 0 ? 'primary' : null));
+      }));
     });
     r.appendChild(list);
   }
@@ -394,7 +394,7 @@
       var note = state.mode === 'mc' ? bestNoteFor(candidate({ mcCount: n })) : null;
       grid.appendChild(menuBtn(t('options', { n: n }), note, function () {
         state.mcCount = n; after();
-      }, n === 4 ? 'small primary' : 'small'));
+      }, 'small'));
     });
     r.appendChild(grid);
   }
@@ -406,7 +406,7 @@
     list.appendChild(menuBtn(t('mc'), null, function () {
       state.outlineAnswer = 'mc';
       showMcCount(showReady);
-    }, 'primary'));
+    }));
     list.appendChild(menuBtn(t('type'), bestNoteFor(candidate({ outlineAnswer: 'type' })), function () {
       state.outlineAnswer = 'type'; showReady();
     }));
@@ -419,7 +419,7 @@
     var list = el('div', 'menu-list');
     list.appendChild(menuBtn(t('capTypeToCapital'), bestNoteFor(candidate({ capType: 'toCapital' })), function () {
       state.capType = 'toCapital'; showReady();
-    }, 'primary'));
+    }));
     list.appendChild(menuBtn(t('capTypeToCountry'), bestNoteFor(candidate({ capType: 'toCountry' })), function () {
       state.capType = 'toCountry'; showReady();
     }));
@@ -474,7 +474,7 @@
     else note.textContent = t('noBest');
     r.appendChild(note);
     var list = el('div', 'menu-list');
-    list.appendChild(menuBtn(t('start'), null, startRound, 'primary'));
+    list.appendChild(menuBtn(t('start'), null, startRound));
     r.appendChild(list);
   }
 
@@ -511,7 +511,7 @@
       r.appendChild(d);
     });
     var list = el('div', 'menu-list');
-    list.appendChild(menuBtn(t('replay'), null, replayFn || startRound, 'primary'));
+    list.appendChild(menuBtn(t('replay'), null, replayFn || startRound));
     list.appendChild(menuBtn(t('toMenu'), null, showCategories));
     r.appendChild(list);
   }
