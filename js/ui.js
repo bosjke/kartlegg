@@ -78,24 +78,12 @@
   }
 
   /* ── screens ──────────────────────────────────────────────────────────── */
-  /* ── learning path (prototype: Europe) ─────────────────────────────── */
-  var PATH_NODES = [
-    { id: 'norden', keys: ['NOR','SWE','DNK','FIN','ISL','EST','LVA','LTU'] },
-    { id: 'vest',   keys: ['GBR','IRL','FRA','BEL','NLD','LUX','DEU','CHE','AUT','LIE'] },
-    { id: 'sor',    keys: ['PRT','ESP','ITA','GRC','MLT','AND','MCO','SMR','VAT','CYP'] },
-    { id: 'balkan', keys: ['SVN','HRV','BIH','SRB','MNE','KOS','MKD','ALB','BGR','ROU'] },
-    { id: 'ost',    keys: ['POL','CZE','SVK','HUN','UKR','BLR','MDA','RUS','TRA'] }
-  ];
-  function nodeUnlocked(i) {
-    return i === 0 || WQSRS.nodeStars(PATH_NODES[i - 1].id) > 0;
-  }
-
   function showStart() {
     screen('menu');
     var r = root(); r.innerHTML = '';
     r.classList.remove('center');
 
-    /* header: brand + streak + today's XP */
+    /* header: brand + streak */
     var top = el('div', 'home-top');
     var brandBox = el('div', null);
     brandBox.appendChild(el('h1', 'title home-title', t('appTitle')));
@@ -117,33 +105,51 @@
     xpWrap.appendChild(bar);
     r.appendChild(xpWrap);
 
+    /* single CTA: continue the path */
+    var ns = WQPath.nodes();
+    var cur = WQPath.currentIndex();
     var list = el('div', 'menu-list');
-    var done = WQSRS.dailyDone();
-    list.appendChild(menuBtn(done ? t('dailyExtra') : t('dailySession'),
-      done ? '\u2713' : '\u2248 3 min', startDailySession, 'primary'));
+    list.appendChild(menuBtn(t('continuePath'), nodeLabel(ns[cur]), function () {
+      startLesson(ns[cur]);
+    }, 'primary'));
     r.appendChild(list);
 
-    /* path */
-    r.appendChild(el('p', 'eyebrow path-eyebrow', t('pathTitle')));
-    var path = el('div', 'menu-list');
-    PATH_NODES.forEach(function (node, i) {
+    /* the path itself */
+    var wrap = el('div', 'path-wrap');
+    var lastUnit = null;
+    ns.forEach(function (node, i) {
+      if (node.unit !== lastUnit) {
+        lastUnit = node.unit;
+        var uh = el('div', 'unit-head');
+        uh.appendChild(el('span', null, t('node_' + node.unit)));
+        wrap.appendChild(uh);
+      }
       var stars = WQSRS.nodeStars(node.id);
-      var unlocked = nodeUnlocked(i);
-      var note = !unlocked ? '\ud83d\udd12'
-        : stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars)
-        : node.keys.length + ' ' + t('countriesShort');
-      var b = menuBtn(t('node_' + node.id), note, function () {
-        if (unlocked) startLesson(node);
-      }, unlocked ? null : 'locked');
-      path.appendChild(b);
+      var isUnlocked = WQPath.unlocked(i);
+      var row = el('div', 'path-row ' + ['zl', 'zc', 'zr', 'zc'][i % 4]);
+      var b = el('button', 'path-node' +
+        (node.checkpoint ? ' checkpoint' : '') +
+        (!isUnlocked ? ' locked' : stars ? ' done' : ' current'), '');
+      b.type = 'button';
+      b.appendChild(el('span', 'path-icon', isUnlocked ? node.icon : '\ud83d\udd12'));
+      if (isUnlocked) b.addEventListener('click', function () { startLesson(node); });
+      row.appendChild(b);
+      var meta = el('div', 'path-meta');
+      meta.appendChild(el('div', 'path-name', nodeLabel(node)));
+      meta.appendChild(el('div', 'path-stars',
+        stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars) : isUnlocked ? '\u2606\u2606\u2606' : ''));
+      row.appendChild(meta);
+      wrap.appendChild(row);
     });
-    r.appendChild(path);
+    r.appendChild(wrap);
 
-    /* free play + settings */
+    /* secondary: smart review (SRS) + free play */
     var free = el('div', 'menu-list');
+    free.appendChild(menuBtn(t('reviewSession'), WQSRS.dailyDone() ? '\u2713' : '\u2248 3 min', startReviewSession));
     free.appendChild(menuBtn(t('freePlay'), null, showCategories));
     r.appendChild(free);
-    var row = el('div', 'settings-row');
+
+    var row2 = el('div', 'settings-row');
     var toggle = el('div', 'lang-toggle');
     ['no', 'en'].forEach(function (l) {
       var b = el('button', WQI18n.lang === l ? 'on' : '', l === 'no' ? 'Norsk' : 'English');
@@ -151,7 +157,7 @@
       b.addEventListener('click', function () { WQI18n.setLang(l); showStart(); });
       toggle.appendChild(b);
     });
-    row.appendChild(toggle);
+    row2.appendChild(toggle);
     var themeToggle = el('div', 'lang-toggle');
     [['dark', t('themeDark')], ['light', t('themeLight')]].forEach(function (pair) {
       var b = el('button', theme === pair[0] ? 'on' : '', pair[1]);
@@ -159,8 +165,13 @@
       b.addEventListener('click', function () { applyTheme(pair[0]); showStart(); });
       themeToggle.appendChild(b);
     });
-    row.appendChild(themeToggle);
-    r.appendChild(row);
+    row2.appendChild(themeToggle);
+    r.appendChild(row2);
+  }
+
+  function nodeLabel(node) {
+    var base = t(node.labelKey);
+    return node.roman ? base + ' ' + node.roman : base;
   }
 
   /* ── daily session: a queue of short segments ──────────────────────── */
@@ -181,19 +192,19 @@
     }
     nextSeg();
   }
-  function startDailySession() {
+  function startReviewSession() {
     var segs = WQSRS.buildDailySession({ type: 'continent', value: 'Europe' });
     if (!segs.length) { showCategories(); return; }
     runSegments(segs, function (totals) {
       WQSRS.addXp(totals.score);
       var streak = WQSRS.completeDaily();
-      showSessionEnd(totals, streak);
+      showSessionEnd(totals, streak, t('reviewSession'));
     });
   }
-  function showSessionEnd(totals, streak) {
+  function showSessionEnd(totals, streak, title) {
     screen('menu');
     var r = root(); r.innerHTML = ''; r.classList.remove('center');
-    header(r, t('dailySession'), t('sessionDone'), showStart);
+    header(r, title || t('dailySession'), t('sessionDone'), showStart);
     r.appendChild(el('div', 'streak-big', '\ud83d\udd25 ' + streak));
     r.appendChild(el('p', 'dim center-text', t('streakDays', { n: streak })));
     var box = el('div', 'stat-block');
@@ -214,23 +225,44 @@
     r.appendChild(list);
   }
 
-  /* ── lessons: fixed country sets, Find mode, stars by accuracy ─────── */
+  /* ── lessons: node.build() gives the segment list; stars by accuracy ── */
   function startLesson(node) {
-    var recs = node.keys.map(function (k) { return WQData.countries[k]; })
-      .filter(function (r) { return r && WQData.countryFeatures[r.key]; });
-    var setup = { category: 'countries', mode: 'find', scope: { type: 'continent', value: 'Europe' },
-                  amount: null, itemsOverride: recs, tag: 'lesson:' + node.id };
-    screen('round');
-    WQMap.init();
-    currentRound = new WQQuiz.Round(setup, { onFinish: function (stats) {
-      var pct = stats.total ? stats.correct / stats.total : 0;
+    var segs = node.build();
+    segs.forEach(function (x) { x.tag = 'lesson:' + node.id; });
+    runSegments(segs, function (totals) {
+      var pct = totals.total ? totals.correct / totals.total : 0;
       var stars = pct >= 1 ? 3 : pct >= 0.8 ? 2 : pct >= 0.6 ? 1 : 0;
       if (stars) WQSRS.setNodeStars(node.id, stars);
-      WQSRS.addXp(stats.score);
-      stats.lessonStars = stars; stats.lessonId = node.id;
-      showEnd(stats, function () { startLesson(node); });
-    } });
-    currentRound.begin();
+      WQSRS.addXp(totals.score);
+      var streak = WQSRS.completeDaily();       /* any finished lesson keeps the streak */
+      showLessonEnd(node, totals, stars, streak);
+    });
+  }
+  function showLessonEnd(node, totals, stars, streak) {
+    screen('menu');
+    var r = root(); r.innerHTML = ''; r.classList.remove('center');
+    header(r, nodeLabel(node), t('sessionDone'), showStart);
+    r.appendChild(el('div', 'streak-big',
+      stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars) : '\u2606\u2606\u2606'));
+    var box = el('div', 'stat-block');
+    [[t('totalScore'), totals.score + ' / ' + totals.max],
+     [t('correctOf'), totals.correct + ' / ' + totals.total],
+     [t('streakLabel'), '\ud83d\udd25 ' + streak]].forEach(function (row) {
+      var line = el('div', 'stat-row');
+      line.appendChild(el('span', null, row[0]));
+      line.appendChild(el('strong', null, String(row[1])));
+      box.appendChild(line);
+    });
+    r.appendChild(box);
+    var pool = t(stars >= 2 ? 'judgeGood' : 'judgeBad');
+    var v = pool[Math.floor(Math.random() * pool.length)];
+    r.appendChild(el('p', 'dim center-text judge-line', '\u00ab' + v[0] + '\u00bb \u2014 ' + v[1]));
+    var list = el('div', 'menu-list');
+    if (stars < 3) list.appendChild(menuBtn(t('replay'), null, function () { startLesson(node); }));
+    var ns = WQPath.nodes(), cur = WQPath.currentIndex();
+    list.appendChild(menuBtn(t('continuePath'), nodeLabel(ns[cur]), function () { startLesson(ns[cur]); }, 'primary'));
+    list.appendChild(menuBtn(t('backToMenu'), null, showStart));
+    r.appendChild(list);
   }
 
   function showCategories() {

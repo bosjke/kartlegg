@@ -269,3 +269,25 @@ h2.title { font-size: 26px; }
 .center-text { text-align: center; }
 .judge-line { font-style: italic; margin-top: 14px; }
 .settings-row { display: flex; gap: 10px; justify-content: center; margin-top: 22px; }
+
+/* ── Lesson path (Duolingo-style winding nodes) ────────────────────────── */
+.path-wrap { margin: 18px 0 8px; position: relative; }
+.unit-head { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px;
+  color: var(--accent); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; }
+.unit-head::before, .unit-head::after { content: ''; flex: 1; border-top: 1px solid var(--line); }
+.path-row { display: flex; align-items: center; gap: 14px; margin: 6px 0; min-height: 76px; }
+.path-row.zl { padding-left: 8%; }
+.path-row.zc { padding-left: 26%; }
+.path-row.zr { padding-left: 44%; }
+.path-node { width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--line);
+  background: var(--panel); font-size: 26px; display: flex; align-items: center;
+  justify-content: center; flex: none; box-shadow: 0 4px 0 var(--line); }
+.path-node:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--line); }
+.path-node.current { border-color: var(--accent); box-shadow: 0 4px 0 var(--accent-line); }
+.path-node.done { border-color: var(--good); background: var(--panel-2); }
+.path-node.locked { opacity: 0.45; box-shadow: none; }
+.path-node.checkpoint { border-radius: 20px; }
+.path-icon { line-height: 1; }
+.path-meta { min-width: 0; }
+.path-name { font-size: 14px; color: var(--ink); }
+.path-stars { font-size: 13px; color: var(--accent); letter-spacing: 2px; }
